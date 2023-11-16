@@ -5,6 +5,7 @@ from flask_sqlalchemy import *
 from sqlalchemy.orm import relationship
 from sqlalchemy import DateTime
 from flask_login import *
+# from main import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:sequence150@localhost:5432/myduka_rep'
@@ -20,14 +21,14 @@ class Products(db.Model):
     stock_quantity = db.Column(db.Numeric(precision=15, scale=2),nullable=False)
     # relationship defination
     salesdetails = relationship('Salesdetails', back_populates='products')
-
+                      
 class Users(db.Model,UserMixin):
     __tablename__='users'
     id=db.Column(db.Integer,primary_key= True)
     email=db.Column(db.String(255),nullable=False, unique=True)
     password=db.Column(db.String(255),nullable=False)
     username=db.Column(db.String(255),nullable=False)
-
+    status=db.Column(db.String(255),nullable=False)
 class Salesdetails(db.Model):
    __tablename__='salesdetails'
    salesdetails_id=db.Column(db.Integer,primary_key= True)
@@ -61,8 +62,6 @@ class Customers(db.Model):
    full_name=db.Column(db.String(255),nullable=False)
    phone_number=db.Column(db.String(255),nullable=False)
    email=db.Column(db.String(255),nullable=False)
-   
-   
    # foreign key relationship defination
    sales=relationship("Sales",back_populates="customers")
    payments=relationship("Payments",back_populates="customers")
@@ -86,3 +85,14 @@ class Employees(db.Model):
    employee_number=db.Column(db.String(255),nullable=False)
    employee_email=db.Column(db.String(255),nullable=False)
    employee_position=db.Column(db.String(255),nullable=False)
+
+
+def update_status_to_online(user_id):
+    user = Users.query.get(user_id)
+    
+    if user :
+        user.status = "online"
+        db.session.commit()
+        return True
+    else:
+        return False
