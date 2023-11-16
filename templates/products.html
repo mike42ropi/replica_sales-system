@@ -1,0 +1,82 @@
+{% extends "base.html"%}
+
+{% block title %} Login {% endblock %}
+
+{% block content %}
+<div class="container">
+
+
+  <br>
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Insert a Product
+  </button>
+  <br>
+  <br>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">insert Product</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form id="pform" action="/products" method="POST">
+            <label>Product name</label>
+            <input type="text" name="product_name" placeholder="Product name" id="pname">
+            <br>
+            <br>
+            <label>Buying price</label>
+            <input type="text" name="buying_price" placeholder="Buying price" id="bp">
+            <br>
+            <br>
+            <label>Selling price</label>
+            <input type="text" name="selling_price" placeholder="Selling price" id="sp">
+            <br>
+            <br>
+            <label>Stock quantity</label>
+            <input type="text" name="stock_quantity" placeholder="Stock quantity" id="sq">
+            <br>
+
+            <br>
+            <input type="submit" value="POST">
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <table id="myTable" class="table">
+    <thead>
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Product name</th>
+        <th scope="col">Buying price</th>
+        <th scope="col">Selling price</th>
+        <th scope="col">Stock quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for product in products%}
+      <tr>
+        <th>{{ product.product_id }}</th>
+        <td>{{ product.product_name }}</td>
+        <td>{{ product.buying_price }}</td>
+        <td>{{ product.selling_price }}</td>
+        <td>{{ product.stock_quantity }}</td>
+      </tr>
+      {%endfor %}
+    </tbody>
+  </table>
+</div>
+<script>
+  let table = new DataTable('#myTable');
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+</script>
+{% endblock %}
