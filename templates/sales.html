@@ -1,77 +1,105 @@
 {% extends "base.html"%}
 
-{% block title %} Login {% endblock %}
+{% block title %} Sales {% endblock %}
 
 {% block content %}
 <div class="container">
 
-    <br>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      Select a Product
-    </button>
-   
-    <br>
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Which product?</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
+  <br>
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Make a sale
+  </button>
+  <br>
+  <br>
 
-            <form id="pform" action="/add-sales" method="POST">
-              <select style="width: 150px;" name="product_id" required>
+  <br>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Which product?</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+      <form action="/add-sales" method="POST">
+            <label>Price of the product</label>
+          <select  multiple>
                 {% for  product in products %}
-                <option value="{{ product.product_id }}">{{ product.product_name }}</option>
+                <option value="{{ product.selling_price }}">{{ product.product_id }}. Ksh {{ product.selling_price }} -
+                  for ({{ product.product_name }})
+                  <hr style="width: 390px; color: black;">
+                </option>
                 {%endfor%}
-              </select>
-              <br>
-              <label>quantity</label>
-              <input type="text" name="quantity" placeholder="quantity" id="q">
-              <br>
+          </select>
+            <br>
+            <br>
 
-              <br>
-              <input type="submit" value="POST">
+            <label>Confirm the product you selected</label>
+          <select name="selected_products[]1" multiple="multiple">
+              {% for  product in products %}
 
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
+              <option value="{{ product.product_id }}">{{ product.product_id }}. ({{ product.product_name }})
+                <hr style="width: 390px; color: black;">
+              </option>
+              {%endfor%}
+          </select>
+            <br>
+            <br>
+            <br><label>Customer</label>
+          <select name="customer_id" style="width: 250px;">
+                {% for  customer in customers %}
+
+                <option value="{{ customer.customer_id }}">{{ customer.customer_id }}. {{ customer.full_name }}
+                  <hr style="width: 10px;">
+                </option>
+                {%endfor%}
+           </select>
+            <br>
+            <br>
+            <br>
+            <input type="submit" value="POST">
+
+      </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
     </div>
-    <table id="myTable" class="table">
-      <thead>
-        <tr>
-          <th scope="col">id</th>
-          <th scope="col">pid</th>
-          <th scope="col">User id</th>
-          <th scope="col">quantity</th>
-          <th scope="col">created_at</th>
-        </tr>
-      </thead>
-      <tbody>
-        {%for sp1 in myprods1%}
-        <tr>
-          <th>{{ sp1[0] }}</th>
-          <td>{{ sp1[1] }}</td>
-          <td>{{ sp1[2] }}</td>
-          <td>{{ sp1[3] }}</td>
-          <td>{{ sp1[4] }}</td>
-          
-
-        </tr>
-        {%endfor %}
-      </tbody>
-    </table>
   </div>
-  <script>
-    let table = new DataTable('#myTable');
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-  </script>
+  <table id="myTable" class="table">
+    <thead>
+      <tr>
+        <th scope="col">Sale id</th>
+        <th scope="col"> Product id</th>
+        <th scope="col">Customer id</th>
+        <th scope="col"> User id</th>
+        <th scope="col"> Total Amount</th>
+        <th scope="col"> Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for sale in sales%}
+      <tr>
+        <th>{{ sale.sale_id }}</th>
+        <th>{{ sale.product_id }}</th>
+        <td>{{ sale.customer_id }}</td>
+        <td>{{ sale.user_id }}</td>
+        <td>{{ sale.total_amount }}</td>
+        <td>{{ sale.created_at }}</td>
+
+
+      </tr>
+      {%endfor %}
+    </tbody>
+  </table>
+</div>
+<script>
+  let table = new DataTable('#myTable');
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+</script>
 {% endblock %}

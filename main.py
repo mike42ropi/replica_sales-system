@@ -92,17 +92,24 @@ def products():
     return render_template("products.html", products = products)
 
 
-@app.route("/add_sales" , methods=['POST'])
+@app.route("/add-sales" , methods=['GET','POST'])
 def add_sales():
     if request.method == "POST":
-        product_id = request.form["product_id"]
-        quantity = request.form["quantity"]
-        user_id=Users.query.filter_by(status="online").first()
+        # product_id=request.form["product_id"]
+        user_id1=db.session.query(Users.id).filter(Users.status == 'online').all()
+        user_id=int(list(user_tuple[0] for user_tuple in user_id1)[0])
+        total_amount = float(request.form["selected_products[]"])
+        product_id = request.form["selected_products[]1"]
+        customer_id = request.form["customer_id"]
         created_at= datetime.now().replace(microsecond=0)
-            
-        new_product=Products(product_id = product_id,
-                            quantity = quantity,
-                            created_at = created_at,)
+
+        # total_amount=stotal_amount1))
+
+        new_product=Sales(customer_id = customer_id,
+                          product_id=product_id,
+                             user_id=user_id,
+                            total_amount=total_amount,                           
+                            created_at = created_at)
             
         db.session.add(new_product)
         db.session.commit()
@@ -111,16 +118,26 @@ def add_sales():
         return redirect("/sales")
 @app.route("/sales",methods=['POST','GET'])
 def sales():
-    
+   
        
     records1 = Products.query.all()
     products = [prod for prod in records1]
+
+    records2 = Customers.query.all()
+    customers = [cust for cust in records2]
     
     records = Sales.query.all()
-    sales = [sale for sale in records]
-    return render_template("sales.html", sales=sales, products = products)
+    sales = [sal for sal in records]
+    return render_template("sales.html", sales = sales, products = products, customers = customers)
     
-
+@app.route("/salesdetails",methods=['POST','GET'])
+def salesdetails():
+    
+    
+            
+       
+    
+    return render_template("sales.html", sales = sales, products = products, customers = customers)
 @app.route("/employees",methods=['POST','GET'])
 def employees():
     if request.method == "POST":
@@ -182,8 +199,12 @@ def users():
 
 @app.route("/logout")
 def logout():
+    
     logout_user()
-    flash("Logged Out")
+    user=Users.query.filter_by(status="online").first()
+    if 'user_id' not in session:
+        update_status_to_offline(user.id)
+        flash("Logged Out")
     return redirect(url_for("login"))
 
 # def update_status(user_id):

@@ -5,7 +5,7 @@ from flask_sqlalchemy import *
 from sqlalchemy.orm import relationship
 from sqlalchemy import DateTime
 from flask_login import *
-# from main import *
+# from main import add_sales 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:sequence150@localhost:5432/myduka_rep'
@@ -21,6 +21,7 @@ class Products(db.Model):
     stock_quantity = db.Column(db.Numeric(precision=15, scale=2),nullable=False)
     # relationship defination
     salesdetails = relationship('Salesdetails', back_populates='products')
+    sales=relationship("Sales",back_populates="products")
                       
 class Users(db.Model,UserMixin):
     __tablename__='users'
@@ -46,11 +47,13 @@ class Sales(db.Model):
    __tablename__='sales'
    sale_id=db.Column(db.Integer,primary_key= True)
    customer_id=db.Column(db.Integer, db.ForeignKey('customers.customer_id'))
-   user_id=db.Column(db.Integer, db.ForeignKey('users.user_id'))
+   product_id=db.Column(db.Integer, db.ForeignKey('products.product_id'))
+   user_id=db.Column(db.Integer, db.ForeignKey('users.id'))
    total_amount=db.Column(db.Numeric(precision=15, scale=2),nullable=False)
    created_at=db.Column(DateTime,default=db.func.curent_timestamp())
    
    # foreign key relationship defination
+   products=relationship("Products",back_populates="sales")
    customers=relationship("Customers",back_populates="sales")
    salesdetails = relationship('Salesdetails', back_populates='sales')
    payments = relationship('Payments', back_populates='sales')
@@ -96,3 +99,15 @@ def update_status_to_online(user_id):
         return True
     else:
         return False
+    
+
+def update_status_to_offline(user_id):
+    user = Users.query.get(user_id)
+    
+    if user :
+        user.status = "offline"
+        db.session.commit()
+        return True
+    else:
+        return False
+
