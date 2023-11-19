@@ -24,7 +24,7 @@
 
       <form action="/add-sales" method="POST">
             <label>Price of the product</label>
-          <select  multiple>
+          <select name="total_amount" multiple>
                 {% for  product in products %}
                 <option value="{{ product.selling_price }}">{{ product.product_id }}. Ksh {{ product.selling_price }} -
                   for ({{ product.product_name }})
@@ -36,7 +36,7 @@
             <br>
 
             <label>Confirm the product you selected</label>
-          <select name="selected_products[]1" multiple="multiple">
+          <select name="product_id" multiple="multiple">
               {% for  product in products %}
 
               <option value="{{ product.product_id }}">{{ product.product_id }}. ({{ product.product_name }})

@@ -98,8 +98,8 @@ def add_sales():
         # product_id=request.form["product_id"]
         user_id1=db.session.query(Users.id).filter(Users.status == 'online').all()
         user_id=int(list(user_tuple[0] for user_tuple in user_id1)[0])
-        total_amount = float(request.form["selected_products[]"])
-        product_id = request.form["selected_products[]1"]
+        total_amount = request.form["total_amount"]
+        product_id = request.form["product_id"]
         customer_id = request.form["customer_id"]
         created_at= datetime.now().replace(microsecond=0)
 
@@ -119,7 +119,7 @@ def add_sales():
 @app.route("/sales",methods=['POST','GET'])
 def sales():
    
-       
+    
     records1 = Products.query.all()
     products = [prod for prod in records1]
 
@@ -130,14 +130,63 @@ def sales():
     sales = [sal for sal in records]
     return render_template("sales.html", sales = sales, products = products, customers = customers)
     
-@app.route("/salesdetails",methods=['POST','GET'])
+@app.route("/salesdetails", methods=['POST', 'GET'])
 def salesdetails():
-    
-    
+    with app.app_context():
+        # Aliases for the two instances of the 'Sales' table
+        sales_alias1 = aliased(Sales)
+        sales_alias2 = aliased(Sales)
+
+        # Common Table Expression (CTE) to calculate the customer_group
+        ranked_sales_cte = (
+            db.session.query(
+                Sales.sale_id,
+                Sales.customer_id,
+                Sales.user_id,
+                Sales.total_amount,
+                Sales.created_at,
+                Sales.product_id,
+                func.row_number().over(order_by=Sales.created_at).label('row_number'),
+                func.row_number().over(partition_by=Sales.customer_id, order_by=Sales.created_at).label('customer_row_number')
+            )
+            .cte('ranked_sales')
+        )
+
+        # Main Query to select aggregated information based on customer_group
+        result = (
+            db.session.query(
+                func.min(ranked_sales_cte.c.sale_id).label('start_sale_id'),
+                func.max(ranked_sales_cte.c.sale_id).label('end_sale_id'),
+                func.count(ranked_sales_cte.c.product_id).label('total_product_id'),
+                func.min(ranked_sales_cte.c.customer_id).label('customer_id'),
+                func.min(ranked_sales_cte.c.user_id).label('user_id'),
+                func.sum(ranked_sales_cte.c.total_amount).label('total_amount'),
+                func.min(ranked_sales_cte.c.created_at).label('start_created_at'),
+                func.max(ranked_sales_cte.c.created_at).label('end_created_at'),
+            )
+            .group_by(ranked_sales_cte.c.customer_id)
+            .order_by(func.min(ranked_sales_cte.c.created_at))
+            .all()
+        ) 
+        if result:
+            # Extract the attributes from the first result tuple
+            start_sale_id = result[].start_sale_id
+            end_sale_id = result[1].end_sale_id
+            total_product_id = result[2].total_product_id
+            customer_id = result[3].customer_id
+            user_id = result[4].user_id
+            total_amount = result[5].total_amount
+            new_salesdetails1=Salesdetails(sales_id= end_sale_id,
+                                           product_id=total_product_id,
+                                           quantity=customer_id,
+                                        purchase_amount=total_amount,                           
+                                )
             
-       
-    
-    return render_template("sales.html", sales = sales, products = products, customers = customers)
+        db.session.add(new_salesdetails1)
+        db.session.commit()
+        
+    return render_template("salesdetails.html", salesdetails=salesdetails)
+
 @app.route("/employees",methods=['POST','GET'])
 def employees():
     if request.method == "POST":

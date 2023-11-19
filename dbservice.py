@@ -2,8 +2,8 @@ from flask import Flask
 # from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import *
 # from sqlalchemy import Column, Integer, ForeignKey, String, Numeric
-from sqlalchemy.orm import relationship
-from sqlalchemy import DateTime
+from sqlalchemy.orm import relationship,aliased
+from sqlalchemy import DateTime,func
 from flask_login import *
 # from main import add_sales 
 
@@ -110,4 +110,14 @@ def update_status_to_offline(user_id):
         return True
     else:
         return False
+    
+
+# def salesdetails1():
+    
+
+
+
+# abc=salesdetails1()
+# print(abc)
+
 
