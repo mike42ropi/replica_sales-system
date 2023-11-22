@@ -3,32 +3,31 @@
 {% block title %} Sales Details {% endblock %}
 
 {% block content %}
+<br>
+<br>
+<br>
 <div class="container">
 
-  {{salesdetails}}
+
   <table id="myTable" class="table">
     <thead>
       <tr>
-        <th scope="col">Sale id</th>
-        <th scope="col"> Product id</th>
-        <th scope="col">Customer id</th>
-        <th scope="col"> User id</th>
-        <th scope="col"> Total Amount</th>
-        <th scope="col"> Created At</th>
+        <th scope="col">Sales detais id</th>
+        <th scope="col"> Sales id</th>
+        <th scope="col">Product id/s</th>
+        <th scope="col"> Quantity</th>
+        <th scope="col"> Purchase amount</th>
       </tr>
     </thead>
     <tbody>
-      {%for sale in sales%}
+      {%for saled in salesdetails%}
       <tr>
-        <th>{{ sale.sale_id }}</th>
-        <th>{{ sale.product_id }}</th>
-        <td>{{ sale.customer_id }}</td>
-        <td>{{ sale.user_id }}</td>
-        <td>{{ sale.total_amount }}</td>
-        <td>{{ sale.created_at }}</td>
-
-
-      </tr>
+        <th>{{ saled.salesdetails_id }}</th>
+        <th>{{ saled.sales_id }}</th>
+        <td>{{ saled.product_id }}</td>
+        <td>{{ saled. quantity }}</td>
+        <td>{{ saled. purchase_amount }}</td>
+       </tr>
       {%endfor %}
     </tbody>
   </table>
